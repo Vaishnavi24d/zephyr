@@ -1,0 +1,13 @@
+# Kconfig - SSD0323 display controller configuration options
+
+#
+# Copyright (c) 2018 Zilogic Systems
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig SSD0323
+	bool "SSD0323 display driver"
+	depends on SPI
+	help
+	  Enable driver for SSD0323 display driver.
