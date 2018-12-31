@@ -45,14 +45,14 @@
 	status = "ok";
 
 	ssd0323fb@0 {
-	compatible = "solomon,ssd0323fb-spi";
-	spi-max-frequency = <12000>;
-	label = "SSD0323";
-	reg = <0>;
-	width = <120>;
-	height = <80>;
-	dc-gpios = <&gpio2 7 0>;
-	cs-gpios = <&gpio0 3 0>;
+		    compatible = "solomon,ssd0323fb-spi";
+		    spi-max-frequency = <12000>;
+		    label = "SSD0323";
+		    reg = <0>;
+		    width = <128>;
+		    height = <64>;
+		    dc-gpios = <&gpio2 7 0>;
+		    cs-gpios = <&gpio0 3 0>;
 	};
 };
 

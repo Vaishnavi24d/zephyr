@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 ---
-title: SSD0323 120x80 Display Controller
+title: SSD0323 Display Controller
 version: 0.1
 
 description: >
@@ -29,15 +29,16 @@ properties:
       description: Width in pixel of the panel driven by the controller
       generation: define
 
-
     dc-gpios:
       type: compound
       category: required
+      description: The data/command select gpio pin
       generation: define, use-prop-name
 
     cs-gpios:
       type: compound
-      category: required
+      category: optional
+      description: The chip select gpio pin
       generation: define, use-prop-name
 
 ...
