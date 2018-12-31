@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018 Zilogic Systems.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #define LOG_LEVEL CONFIG_DISPLAY_LOG_LEVEL
 #include <logging/log.h>
 LOG_MODULE_REGISTER(ssd0323);
@@ -45,18 +51,8 @@ static inline int ssd0323_write_cmd(struct ssd0323_data *driver,
 static int ssd0323_set_orientation(const struct device *dev,
 				   const enum display_orientation orientation)
 {
-	u8_t temp;
-	struct ssd0323_data *driver = dev->driver_data;
-
-	if (orientation == DISPLAY_ORIENTATION_ROTATED_90) {
-		temp = SSD0323_CMD_DAT_VERT_INCR;
-		ssd0323_write_cmd(driver, SSD0323_CMD_SET_REMAP,
-				  &temp, sizeof(temp));
-	} else if (orientation != DISPLAY_ORIENTATION_NORMAL) {
-		return -ENOTSUP;
-	}
-
-	return 0;
+	LOG_ERR("not supported");
+	return -ENOTSUP;
 }
 
 static int ssd0323_resume(const struct device *dev)
@@ -96,7 +92,7 @@ static int ssd0323_write(const struct device *dev, const u16_t x,
 	ssd0323_write_cmd(driver, SSD0323_CMD_SET_ROW_ADDR,
 			  y_range, sizeof(y_range));
 
-	if (desc->pitch != 0 && desc->pitch < DISPLAY_PANEL_WIDTH) {
+	if (desc->pitch != 0 && desc->pitch < DT_SSD0323_PANEL_WIDTH) {
 		x_range[1] = (x / 2) + ((desc->pitch) / 2) - 1;
 	} else {
 		x_range[1] = SSD0323_COLUMN_END;
@@ -162,10 +158,10 @@ static void ssd0323_get_capabilities(const struct device *dev,
 				     struct display_capabilities *caps)
 {
 	memset(caps, 0, sizeof(struct display_capabilities));
-	caps->x_resolution = DISPLAY_PANEL_WIDTH;
-	caps->y_resolution = DISPLAY_PANEL_HEIGHT;
-	caps->supported_pixel_formats = PIXEL_FORMAT_MONO01;
-	caps->current_pixel_format = PIXEL_FORMAT_MONO01;
+	caps->x_resolution = DT_SSD0323_PANEL_WIDTH;
+	caps->y_resolution = DT_SSD0323_PANEL_HEIGHT;
+	caps->supported_pixel_formats = PIXEL_FORMAT_GRAY_4BPP;
+	caps->current_pixel_format = PIXEL_FORMAT_GRAY_4BPP;
 	caps->screen_info = SCREEN_INFO_MONO_MSB_FIRST;
 	caps->current_orientation = DISPLAY_ORIENTATION_NORMAL;
 }
@@ -173,7 +169,7 @@ static void ssd0323_get_capabilities(const struct device *dev,
 static int ssd0323_set_pixel_format(const struct device *dev,
 				    const enum display_pixel_format pf)
 {
-	if (pf != PIXEL_FORMAT_MONO01) {
+	if (pf != PIXEL_FORMAT_GRAY_4BPP) {
 		LOG_ERR("pixel format not supported");
 		return -ENOTSUP;
 	}
@@ -205,7 +201,6 @@ static int ssd0323_init(struct device *dev)
 
 	ret = gpio_pin_configure(driver->dc, DT_SSD0323_DC_PIN,
 				 GPIO_DIR_OUT);
-
 	if (ret < 0) {
 		LOG_ERR("Error configuring GPIO");
 		return -EIO;
@@ -218,11 +213,11 @@ static int ssd0323_init(struct device *dev)
 		LOG_ERR("Unable to get SPI GPIO CS device");
 		return -EIO;
 	}
+
 	driver->cs_ctrl.gpio_pin = DT_SSD0323_CS_PIN;
 	driver->cs_ctrl.delay = 0;
 	driver->spi_config.cs = &driver->cs_ctrl;
 #endif
-
 	return 0;
 }
 
@@ -240,7 +235,6 @@ static struct display_driver_api ssd0323_driver_api = {
 	.set_pixel_format = ssd0323_set_pixel_format,
 	.set_orientation = ssd0323_set_orientation,
 };
-
 
 DEVICE_AND_API_INIT(ssd0323, DT_SSD0323_DEV_NAME, ssd0323_init,
 		    &ssd0323_driver_data, NULL,
